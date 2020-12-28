@@ -1,6 +1,6 @@
 var socket = io();
 
-let params = new URLSearchParams(window.location.search)
+var params = new URLSearchParams(window.location.search)
 
 if (!params.has('name') || !params.has('room')) {
     window.location = "index.html"
@@ -16,11 +16,10 @@ socket.on('connect', function() {
     console.log('Conectado al servidor');
 
     socket.emit('enterChat', user, function(resp) {
-        console.log(resp)
+        renderUsers(resp)
     })
 });
 
-// escuchar
 socket.on('disconnect', function() {
 
     console.log('Perdimos conexión con el servidor');
@@ -28,26 +27,16 @@ socket.on('disconnect', function() {
 });
 
 
-// Enviar información
-
-/*
-socket.emit('createMessage', {
-    usuario: 'Fernando',
-    mensaje: 'Hola Mundo'
-}, function(resp) {
-    console.log('respuesta server: ', resp);
-});*/
-
 // Escuchar información
 socket.on('createMessage', function(mensaje) {
 
-    console.log('Servidor:', mensaje);
-
+    renderMessages(mensaje, false)
+    scrollBottom()
 });
 
 // Listening when a user leave or enter to room chat
 socket.on('listPersons', function(persons) {
-    console.log(persons);
+    renderUsers(persons)
 })
 
 socket.on('privateMessage', function(message) {
